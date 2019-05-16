@@ -3,7 +3,7 @@ import UIKit
 
 // Currency symbol
 
-attributedCurrencyString(
+Format.attributedCurrency(
   currencySymbol: "",
   amount: 99.975,
   fractionDigits: 2,
@@ -12,7 +12,7 @@ attributedCurrencyString(
   foregroundColor: UIColor.cyan
 )
 
-attributedCurrencyString(
+Format.attributedCurrency(
   currencySymbol: "$",
   amount: 99.975,
   fractionDigits: 2,
@@ -21,7 +21,7 @@ attributedCurrencyString(
   foregroundColor: UIColor.cyan
 )
 
-attributedCurrencyString(
+Format.attributedCurrency(
   currencySymbol: "CA$",
   amount: 99.975,
   fractionDigits: 2,
@@ -32,7 +32,7 @@ attributedCurrencyString(
 
 // Amount
 
-attributedCurrencyString(
+Format.attributedCurrency(
   currencySymbol: "CA$",
   amount: 0,
   fractionDigits: 2,
@@ -41,7 +41,7 @@ attributedCurrencyString(
   foregroundColor: UIColor.cyan
 )
 
-attributedCurrencyString(
+Format.attributedCurrency(
   currencySymbol: "CA$",
   amount: 99.975,
   fractionDigits: 2,
@@ -52,7 +52,7 @@ attributedCurrencyString(
 
 // Fraction digits
 
-attributedCurrencyString(
+Format.attributedCurrency(
   currencySymbol: "CA$",
   amount: 99.975,
   fractionDigits: 0,
@@ -61,7 +61,7 @@ attributedCurrencyString(
   foregroundColor: UIColor.cyan
 )
 
-attributedCurrencyString(
+Format.attributedCurrency(
   currencySymbol: "CA$",
   amount: 99.975,
   fractionDigits: 1,
@@ -70,7 +70,7 @@ attributedCurrencyString(
   foregroundColor: UIColor.cyan
 )
 
-attributedCurrencyString(
+Format.attributedCurrency(
   currencySymbol: "CA$",
   amount: 99.975,
   fractionDigits: 3,
@@ -79,7 +79,7 @@ attributedCurrencyString(
   foregroundColor: UIColor.cyan
 )
 
-attributedCurrencyString(
+Format.attributedCurrency(
   currencySymbol: "CA$",
   amount: 99.975,
   fractionDigits: 5,
@@ -90,7 +90,7 @@ attributedCurrencyString(
 
 // Fonts
 
-attributedCurrencyString(
+Format.attributedCurrency(
   currencySymbol: "CA$",
   amount: 99.975,
   fractionDigits: 2,
@@ -99,7 +99,7 @@ attributedCurrencyString(
   foregroundColor: UIColor.cyan
 )
 
-attributedCurrencyString(
+Format.attributedCurrency(
   currencySymbol: "CA$",
   amount: 99.975,
   fractionDigits: 2,
@@ -108,7 +108,7 @@ attributedCurrencyString(
   foregroundColor: UIColor.cyan
 )
 
-attributedCurrencyString(
+Format.attributedCurrency(
   currencySymbol: "CA$",
   amount: 99.975,
   fractionDigits: 2,
@@ -119,7 +119,7 @@ attributedCurrencyString(
 
 // Foreground color
 
-attributedCurrencyString(
+Format.attributedCurrency(
   currencySymbol: "CA$",
   amount: 99.975,
   fractionDigits: 2,

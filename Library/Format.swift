@@ -105,6 +105,62 @@ public enum Format {
       ?? (symbol + "\(amount)")
   }
 
+  public static func formattedCurrency(
+    _ amount: Double,
+    country: Project.Country,
+    omitCurrencyCode: Bool = true,
+    currencySymbolAttributes: [NSAttributedString.Key: Any] = [:],
+    decimalSeparatorAttributes: [NSAttributedString.Key: Any] = [:],
+    fractionDigitsAttributes: [NSAttributedString.Key: Any] = [:],
+    env: Environment = AppEnvironment.current
+    ) -> NSAttributedString {
+    return NSAttributedString(string: "Hello")
+  }
+
+  // Maybe we need to calculate vertical offset on the formatter and this is just a proxy function
+  // then we can simply test NumberFormatter not Format ... format should be tested for currency position
+  // based on locale
+  public static func attributedCurrency(
+    currencySymbol: String,
+    amount: Double,
+    fractionDigits: UInt,
+    font: UIFont,
+    superscriptFont: UIFont,
+    foregroundColor: UIColor
+    ) -> NSAttributedString? {
+    // Calculate vertical offset based on the height of a capital character of the two fonts
+    let maxCapHeight: CGFloat = max(font.capHeight, superscriptFont.capHeight)
+    let minCapHeight: CGFloat = min(font.capHeight, superscriptFont.capHeight)
+    let multiplier: CGFloat = font.capHeight > superscriptFont.capHeight ? 1 : 0
+    let baselineOffset = NSNumber(value: Float(multiplier * (maxCapHeight - minCapHeight)))
+
+    // Formatter
+    let formatter = AttributedNumberFormatter()
+    formatter.numberStyle = .currency
+    formatter.roundingMode = .down
+    formatter.maximumFractionDigits = Int(fractionDigits)
+    formatter.minimumFractionDigits = Int(fractionDigits)
+    //  formatter.locale = Locale(identifier: "es") // es, jp
+    formatter.currencySymbol = currencySymbol  // CA$
+
+    let defaultAttributes = [
+      NSAttributedString.Key.font: font,
+      NSAttributedString.Key.foregroundColor: foregroundColor
+    ]
+
+    let superscriptAttributes = [
+      NSAttributedString.Key.font: superscriptFont,
+      NSAttributedString.Key.baselineOffset: baselineOffset
+    ]
+
+    formatter.defaultAttributes = defaultAttributes
+    formatter.currencySymbolAttributes = superscriptAttributes
+    formatter.decimalSeparatorAttributes = superscriptAttributes
+    formatter.fractionDigitsAttributes = superscriptAttributes
+
+    return formatter.attributedString(for: amount)
+  }
+
   /**
   Create a date from a string with the given format
 

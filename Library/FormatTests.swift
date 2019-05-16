@@ -262,6 +262,412 @@ final class FormatTests: TestCase {
     }
   }
 
+  func testAttributedCurrency_Symbol_NoSymbol() {
+    let currencySymbol = ""
+    let attributedCurrency = Format.attributedCurrency(
+      currencySymbol: currencySymbol,
+      amount: 99.975,
+      fractionDigits: 2,
+      font: UIFont.ksr_title1(),
+      superscriptFont: UIFont.ksr_body(),
+      foregroundColor: UIColor.cyan
+    )
+    let range = NSRange(location: 0, length: currencySymbol.count)
+    let attributedSubstring = attributedCurrency?.attributedSubstring(from: range)
+
+    XCTAssertEqual("99.97", attributedCurrency?.string)
+    XCTAssertEqual(0, attributedSubstring?.length)
+  }
+
+  func testAttributedCurrency_Symbol_SimpleSymbol() {
+    let currencySymbol = "$"
+    let font = UIFont.ksr_title1()
+    let superscriptFont = UIFont.ksr_body()
+    let foregroundColor = UIColor.cyan
+    let attributedCurrency = Format.attributedCurrency(
+      currencySymbol: currencySymbol,
+      amount: 99.975,
+      fractionDigits: 2,
+      font: font,
+      superscriptFont: superscriptFont,
+      foregroundColor: foregroundColor
+    )
+    let range = NSRange(location: 0, length: currencySymbol.count)
+    let attributedSubstring = attributedCurrency?.attributedSubstring(from: range)
+    let attributes = attributedSubstring?.attributes(at: 0, longestEffectiveRange: nil, in: range)
+    let offset = font.capHeight - superscriptFont.capHeight
+
+    XCTAssertEqual("$99.97", attributedCurrency?.string)
+    XCTAssertEqual(currencySymbol, attributedSubstring?.string)
+    XCTAssertEqual(superscriptFont, attributes?[NSAttributedString.Key.font] as? UIFont)
+    XCTAssertEqual(foregroundColor, attributes?[NSAttributedString.Key.foregroundColor] as? UIColor)
+    XCTAssertEqual(offset, (attributes?[NSAttributedString.Key.baselineOffset]) as? CGFloat)
+  }
+
+  func testAttributedCurrency_Symbol_CustomSymbol() {
+    let currencySymbol = "CA$"
+    let font = UIFont.ksr_title1()
+    let superscriptFont = UIFont.ksr_body()
+    let foregroundColor = UIColor.cyan
+    let attributedCurrency = Format.attributedCurrency(
+      currencySymbol: currencySymbol,
+      amount: 99.975,
+      fractionDigits: 2,
+      font: font,
+      superscriptFont: superscriptFont,
+      foregroundColor: foregroundColor
+    )
+    let range = NSRange(location: 0, length: currencySymbol.count)
+    let attributedSubstring = attributedCurrency?.attributedSubstring(from: range)
+    let attributes = attributedSubstring?.attributes(at: 0, longestEffectiveRange: nil, in: range)
+    let offset = font.capHeight - superscriptFont.capHeight
+
+    XCTAssertEqual("CA$99.97", attributedCurrency?.string)
+    XCTAssertEqual(currencySymbol, attributedSubstring?.string)
+    XCTAssertEqual(superscriptFont, attributes?[NSAttributedString.Key.font] as? UIFont)
+    XCTAssertEqual(foregroundColor, attributes?[NSAttributedString.Key.foregroundColor] as? UIColor)
+    XCTAssertEqual(offset, attributes?[NSAttributedString.Key.baselineOffset] as? CGFloat)
+  }
+
+  func testAttributedCurrency_Amount_Zero() {
+    let font = UIFont.ksr_title1()
+    let foregroundColor = UIColor.cyan
+    let attributedCurrency = Format.attributedCurrency(
+      currencySymbol: "",
+      amount: 0,
+      fractionDigits: 2,
+      font: font,
+      superscriptFont: UIFont.ksr_body(),
+      foregroundColor: foregroundColor
+    )
+    let range = NSRange(location: 0, length: 1)
+    let attributedSubstring = attributedCurrency?.attributedSubstring(from: range)
+    let attributes = attributedSubstring?.attributes(at: 0, longestEffectiveRange: nil, in: range)
+
+    XCTAssertEqual("0.00", attributedCurrency?.string)
+    XCTAssertEqual("0", attributedSubstring?.string)
+    XCTAssertEqual(font, attributes?[NSAttributedString.Key.font] as? UIFont)
+    XCTAssertEqual(foregroundColor, attributes?[NSAttributedString.Key.foregroundColor] as? UIColor)
+  }
+
+  func testAttributedCurrency_Amount_NonZero() {
+    let font = UIFont.ksr_title1()
+    let foregroundColor = UIColor.cyan
+    let attributedCurrency = Format.attributedCurrency(
+      currencySymbol: "",
+      amount: 199,
+      fractionDigits: 2,
+      font: font,
+      superscriptFont: UIFont.ksr_body(),
+      foregroundColor: foregroundColor
+    )
+    let range = NSRange(location: 0, length: 3)
+    let attributedSubstring = attributedCurrency?.attributedSubstring(from: range)
+    let attributes = attributedSubstring?.attributes(at: 0, longestEffectiveRange: nil, in: range)
+
+    XCTAssertEqual("199.00", attributedCurrency?.string)
+    XCTAssertEqual("199", attributedSubstring?.string)
+    XCTAssertEqual(font, attributes?[NSAttributedString.Key.font] as? UIFont)
+    XCTAssertEqual(foregroundColor, attributes?[NSAttributedString.Key.foregroundColor] as? UIColor)
+  }
+
+  func testAttributedCurrency_FractionDigits_Zero() {
+    let superscriptFont = UIFont.ksr_body()
+    let foregroundColor = UIColor.cyan
+    let fractionDigits = 0
+    let fractionDigitsPlusSeparator = 0
+    let attributedCurrency = Format.attributedCurrency(
+      currencySymbol: "",
+      amount: 1.2755,
+      fractionDigits: UInt(fractionDigits),
+      font: UIFont.ksr_title1(),
+      superscriptFont: superscriptFont,
+      foregroundColor: foregroundColor
+    )
+    let range = NSRange(location: 0, length: fractionDigitsPlusSeparator)
+    let attributedSubstring = attributedCurrency?.attributedSubstring(from: range)
+
+    XCTAssertEqual("1", attributedCurrency?.string)
+    XCTAssertEqual(0, attributedSubstring?.length)
+  }
+
+  func testAttributedCurrency_FractionDigits_Two() {
+    let superscriptFont = UIFont.ksr_body()
+    let foregroundColor = UIColor.cyan
+    let fractionDigits = 2
+    let fractionDigitsPlusSeparator = fractionDigits + 1
+    let attributedCurrency = Format.attributedCurrency(
+      currencySymbol: "",
+      amount: 1.2755,
+      fractionDigits: UInt(fractionDigits),
+      font: UIFont.ksr_title1(),
+      superscriptFont: superscriptFont,
+      foregroundColor: foregroundColor
+    )
+    var range = NSRange(location: 1, length: fractionDigitsPlusSeparator)
+    let attributedSubstring = attributedCurrency?.attributedSubstring(from: range)
+    range = NSRange(location: 0, length: fractionDigitsPlusSeparator)
+    let attributes = attributedSubstring?.attributes(at: 0, longestEffectiveRange: nil, in: range)
+
+    XCTAssertEqual("1.27", attributedCurrency?.string)
+    XCTAssertEqual(".27", attributedSubstring?.string)
+    XCTAssertEqual(superscriptFont, attributes?[NSAttributedString.Key.font] as? UIFont)
+    XCTAssertEqual(foregroundColor, attributes?[NSAttributedString.Key.foregroundColor] as? UIColor)
+  }
+
+  func testAttributedCurrency_FractionDigits_Ten() {
+    let superscriptFont = UIFont.ksr_body()
+    let foregroundColor = UIColor.cyan
+    let fractionDigits = 10
+    let fractionDigitsPlusSeparator = fractionDigits + 1
+    let attributedCurrency = Format.attributedCurrency(
+      currencySymbol: "",
+      amount: 1.2755,
+      fractionDigits: UInt(fractionDigits),
+      font: UIFont.ksr_title1(),
+      superscriptFont: superscriptFont,
+      foregroundColor: foregroundColor
+    )
+    var range = NSRange(location: 1, length: fractionDigitsPlusSeparator)
+    let attributedSubstring = attributedCurrency?.attributedSubstring(from: range)
+    range = NSRange(location: 0, length: fractionDigitsPlusSeparator)
+    let attributes = attributedSubstring?.attributes(at: 0, longestEffectiveRange: nil, in: range)
+
+    XCTAssertEqual("1.2755000000", attributedCurrency?.string)
+    XCTAssertEqual(".2755000000", attributedSubstring?.string)
+    XCTAssertEqual(superscriptFont, attributes?[NSAttributedString.Key.font] as? UIFont)
+    XCTAssertEqual(foregroundColor, attributes?[NSAttributedString.Key.foregroundColor] as? UIColor)
+  }
+
+  // swiftlint:disable line_length
+  func testAttributedCurrency_BaselineOffset_FontLargerThanSuperscriptFont() {
+    let currencySymbol = "CZK"
+    let font = UIFont.ksr_title1()
+    let superscriptFont = UIFont.ksr_body()
+    let foregroundColor = UIColor.cyan
+    let fractionDigits = 1
+    let fractionDigitsPlusSeparator = fractionDigits + 1
+    let attributedCurrency = Format.attributedCurrency(
+      currencySymbol: currencySymbol,
+      amount: 14.99,
+      fractionDigits: UInt(fractionDigits),
+      font: font,
+      superscriptFont: superscriptFont,
+      foregroundColor: foregroundColor
+    )
+    var range = NSRange(location: 0, length: currencySymbol.count)
+    let attributedCurrencySubstring = attributedCurrency?.attributedSubstring(from: range)
+    range = NSRange(location: currencySymbol.count + 2, length: fractionDigitsPlusSeparator)
+    let attributedFractionSubstring = attributedCurrency?.attributedSubstring(from: range)
+    range = NSRange(location: 0, length: currencySymbol.count)
+    let currencyAttributes = attributedCurrencySubstring?.attributes(at: 0, longestEffectiveRange: nil, in: range)
+    range = NSRange(location: 0, length: fractionDigitsPlusSeparator)
+    let fractionAttributes = attributedFractionSubstring?.attributes(at: 0, longestEffectiveRange: nil, in: range)
+    let offset = font.capHeight - superscriptFont.capHeight
+
+    XCTAssertEqual("CZK14.9", attributedCurrency?.string)
+    XCTAssertEqual("CZK", attributedCurrencySubstring?.string)
+    XCTAssertEqual(".9", attributedFractionSubstring?.string)
+    XCTAssertEqual(superscriptFont, currencyAttributes?[NSAttributedString.Key.font] as? UIFont)
+    XCTAssertEqual(foregroundColor, currencyAttributes?[NSAttributedString.Key.foregroundColor] as? UIColor)
+    XCTAssertEqual(offset, currencyAttributes?[NSAttributedString.Key.baselineOffset] as? CGFloat)
+    XCTAssertEqual(superscriptFont, fractionAttributes?[NSAttributedString.Key.font] as? UIFont)
+    XCTAssertEqual(foregroundColor, fractionAttributes?[NSAttributedString.Key.foregroundColor] as? UIColor)
+    XCTAssertEqual(offset, fractionAttributes?[NSAttributedString.Key.baselineOffset] as? CGFloat)
+  }
+
+  func testAttributedCurrency_BaselineOffset_FontSmallerThanSuperscriptFont() {
+    let currencySymbol = "CZK"
+    let font = UIFont.ksr_body()
+    let superscriptFont = UIFont.ksr_title1()
+    let foregroundColor = UIColor.cyan
+    let fractionDigits = 1
+    let fractionDigitsPlusSeparator = fractionDigits + 1
+    let attributedCurrency = Format.attributedCurrency(
+      currencySymbol: currencySymbol,
+      amount: 14.99,
+      fractionDigits: UInt(fractionDigits),
+      font: font,
+      superscriptFont: superscriptFont,
+      foregroundColor: foregroundColor
+    )
+    var range = NSRange(location: 0, length: currencySymbol.count)
+    let attributedCurrencySubstring = attributedCurrency?.attributedSubstring(from: range)
+    range = NSRange(location: currencySymbol.count + 2, length: fractionDigitsPlusSeparator)
+    let attributedFractionSubstring = attributedCurrency?.attributedSubstring(from: range)
+    range = NSRange(location: 0, length: currencySymbol.count)
+    let currencyAttributes = attributedCurrencySubstring?.attributes(at: 0, longestEffectiveRange: nil, in: range)
+    range = NSRange(location: 0, length: fractionDigitsPlusSeparator)
+    let fractionAttributes = attributedFractionSubstring?.attributes(at: 0, longestEffectiveRange: nil, in: range)
+
+    XCTAssertEqual("CZK14.9", attributedCurrency?.string)
+    XCTAssertEqual("CZK", attributedCurrencySubstring?.string)
+    XCTAssertEqual(".9", attributedFractionSubstring?.string)
+    XCTAssertEqual(superscriptFont, currencyAttributes?[NSAttributedString.Key.font] as? UIFont)
+    XCTAssertEqual(foregroundColor, currencyAttributes?[NSAttributedString.Key.foregroundColor] as? UIColor)
+    XCTAssertEqual(0, currencyAttributes?[NSAttributedString.Key.baselineOffset] as? CGFloat)
+    XCTAssertEqual(superscriptFont, fractionAttributes?[NSAttributedString.Key.font] as? UIFont)
+    XCTAssertEqual(foregroundColor, fractionAttributes?[NSAttributedString.Key.foregroundColor] as? UIColor)
+    XCTAssertEqual(0, fractionAttributes?[NSAttributedString.Key.baselineOffset] as? CGFloat)
+  }
+
+  func testAttributedCurrency_BaselineOffset_FontEqualToSuperscriptFont() {
+    let currencySymbol = "CZK"
+    let font = UIFont.ksr_body()
+    let foregroundColor = UIColor.cyan
+    let fractionDigits = 1
+    let fractionDigitsPlusSeparator = fractionDigits + 1
+    let attributedCurrency = Format.attributedCurrency(
+      currencySymbol: currencySymbol,
+      amount: 14.99,
+      fractionDigits: UInt(fractionDigits),
+      font: font,
+      superscriptFont: font,
+      foregroundColor: foregroundColor
+    )
+    var range = NSRange(location: 0, length: currencySymbol.count)
+    let attributedCurrencySubstring = attributedCurrency?.attributedSubstring(from: range)
+    range = NSRange(location: currencySymbol.count + 2, length: fractionDigitsPlusSeparator)
+    let attributedFractionSubstring = attributedCurrency?.attributedSubstring(from: range)
+    range = NSRange(location: 0, length: currencySymbol.count)
+    let currencyAttributes = attributedCurrencySubstring?.attributes(at: 0, longestEffectiveRange: nil, in: range)
+    range = NSRange(location: 0, length: fractionDigitsPlusSeparator)
+    let fractionAttributes = attributedFractionSubstring?.attributes(at: 0, longestEffectiveRange: nil, in: range)
+
+    XCTAssertEqual("CZK14.9", attributedCurrency?.string)
+    XCTAssertEqual("CZK", attributedCurrencySubstring?.string)
+    XCTAssertEqual(".9", attributedFractionSubstring?.string)
+    XCTAssertEqual(font, currencyAttributes?[NSAttributedString.Key.font] as? UIFont)
+    XCTAssertEqual(foregroundColor, currencyAttributes?[NSAttributedString.Key.foregroundColor] as? UIColor)
+    XCTAssertEqual(0, currencyAttributes?[NSAttributedString.Key.baselineOffset] as? CGFloat)
+    XCTAssertEqual(font, fractionAttributes?[NSAttributedString.Key.font] as? UIFont)
+    XCTAssertEqual(foregroundColor, fractionAttributes?[NSAttributedString.Key.foregroundColor] as? UIColor)
+    XCTAssertEqual(0, fractionAttributes?[NSAttributedString.Key.baselineOffset] as? CGFloat)
+  }
+
+  func testAttributedCurrency_ForegroundColor() {
+    let foregroundColor = UIColor.red
+    let attributedCurrency = Format.attributedCurrency(
+      currencySymbol: "CA$",
+      amount: 9.99,
+      fractionDigits: 2,
+      font: UIFont.ksr_title1(),
+      superscriptFont: UIFont.ksr_body(),
+      foregroundColor: foregroundColor
+    )
+    let range = NSRange(location: 0, length: attributedCurrency?.length ?? 0)
+    let attributes = attributedCurrency?.attributes(at: 0, longestEffectiveRange: nil, in: range)
+
+    XCTAssertEqual("CA$9.99", attributedCurrency?.string)
+    XCTAssertEqual(foregroundColor, attributes?[NSAttributedString.Key.foregroundColor] as? UIColor)
+  }
+
+  func testAttributedCurrency_Combined_Currency_NoSymbol_Amount_Zero_FractionDigits_Zero() {
+    let currencySymbol = ""
+    let font = UIFont.ksr_title2()
+    let superscriptFont = UIFont.ksr_body()
+    let foregroundColor = UIColor.cyan
+    let fractionDigits = 0
+    let attributedCurrency = Format.attributedCurrency(
+      currencySymbol: currencySymbol,
+      amount: 0,
+      fractionDigits: UInt(fractionDigits),
+      font: font,
+      superscriptFont: superscriptFont,
+      foregroundColor: foregroundColor
+    )
+    let range = NSRange(location: 0, length: attributedCurrency?.length ?? 0)
+    let attributes = attributedCurrency?.attributes(at: 0, longestEffectiveRange: nil, in: range)
+
+    XCTAssertEqual("0", attributedCurrency?.string)
+    XCTAssertEqual(foregroundColor, attributes?[NSAttributedString.Key.foregroundColor] as? UIColor)
+  }
+
+  func testAttributedCurrency_Combined_Currency_SimpleSymbol_Amount_NonZero_FractionDigits_Two() {
+    let currencySymbol = "¥"
+    let font = UIFont.ksr_title2()
+    let superscriptFont = UIFont.ksr_body()
+    let foregroundColor = UIColor.cyan
+    let fractionDigits = 2
+    let fractionDigitsPlusSeparator = fractionDigits + 1
+    let attributedCurrency = Format.attributedCurrency(
+      currencySymbol: currencySymbol,
+      amount: 10.0025,
+      fractionDigits: UInt(fractionDigits),
+      font: font,
+      superscriptFont: superscriptFont,
+      foregroundColor: foregroundColor
+    )
+    var range = NSRange(location: currencySymbol.count, length: 2)
+    let attributedAmountSubstring = attributedCurrency?.attributedSubstring(from: range)
+    range = NSRange(location: 0, length: currencySymbol.count)
+    let attributedCurrencySubstring = attributedCurrency?.attributedSubstring(from: range)
+    range = NSRange(location: currencySymbol.count + 2, length: fractionDigitsPlusSeparator)
+    let attributedFractionSubstring = attributedCurrency?.attributedSubstring(from: range)
+    range = NSRange(location: 0, length: currencySymbol.count)
+    let currencyAttributes = attributedCurrencySubstring?.attributes(at: 0, longestEffectiveRange: nil, in: range)
+    range = NSRange(location: 0, length: 2)
+    let amountAttributes = attributedAmountSubstring?.attributes(at: 0, longestEffectiveRange: nil, in: range)
+    range = NSRange(location: 0, length: fractionDigitsPlusSeparator)
+    let fractionAttributes = attributedFractionSubstring?.attributes(at: 0, longestEffectiveRange: nil, in: range)
+    let offset = font.capHeight - superscriptFont.capHeight
+
+    XCTAssertEqual("¥10.00", attributedCurrency?.string)
+    XCTAssertEqual("¥", attributedCurrencySubstring?.string)
+    XCTAssertEqual(".00", attributedFractionSubstring?.string)
+    XCTAssertEqual(superscriptFont, currencyAttributes?[NSAttributedString.Key.font] as? UIFont)
+    XCTAssertEqual(foregroundColor, currencyAttributes?[NSAttributedString.Key.foregroundColor] as? UIColor)
+    XCTAssertEqual(offset, currencyAttributes?[NSAttributedString.Key.baselineOffset] as? CGFloat)
+    XCTAssertEqual(font, amountAttributes?[NSAttributedString.Key.font] as? UIFont)
+    XCTAssertEqual(foregroundColor, amountAttributes?[NSAttributedString.Key.foregroundColor] as? UIColor)
+    XCTAssertEqual(superscriptFont, fractionAttributes?[NSAttributedString.Key.font] as? UIFont)
+    XCTAssertEqual(foregroundColor, fractionAttributes?[NSAttributedString.Key.foregroundColor] as? UIColor)
+    XCTAssertEqual(offset, fractionAttributes?[NSAttributedString.Key.baselineOffset] as? CGFloat)
+  }
+
+  func testAttributedCurrency_Combined_Currency_CustomSymbol_Amount_NonZero_FractionDigits_Five() {
+    let currencySymbol = "CZK"
+    let font = UIFont.ksr_title2()
+    let superscriptFont = UIFont.ksr_body()
+    let foregroundColor = UIColor.blue
+    let fractionDigits = 5
+    let fractionDigitsPlusSeparator = fractionDigits + 1
+    let attributedCurrency = Format.attributedCurrency(
+      currencySymbol: currencySymbol,
+      amount: 100.0025,
+      fractionDigits: UInt(fractionDigits),
+      font: font,
+      superscriptFont: superscriptFont,
+      foregroundColor: foregroundColor
+    )
+    var range = NSRange(location: currencySymbol.count, length: 3)
+    let attributedAmountSubstring = attributedCurrency?.attributedSubstring(from: range)
+    range = NSRange(location: 0, length: currencySymbol.count)
+    let attributedCurrencySubstring = attributedCurrency?.attributedSubstring(from: range)
+    range = NSRange(location: currencySymbol.count + 3, length: fractionDigitsPlusSeparator)
+    let attributedFractionSubstring = attributedCurrency?.attributedSubstring(from: range)
+    range = NSRange(location: 0, length: currencySymbol.count)
+    let currencyAttributes = attributedCurrencySubstring?.attributes(at: 0, longestEffectiveRange: nil, in: range)
+    range = NSRange(location: 0, length: 3)
+    let amountAttributes = attributedAmountSubstring?.attributes(at: 0, longestEffectiveRange: nil, in: range)
+    range = NSRange(location: 0, length: fractionDigitsPlusSeparator)
+    let fractionAttributes = attributedFractionSubstring?.attributes(at: 0, longestEffectiveRange: nil, in: range)
+    let offset = font.capHeight - superscriptFont.capHeight
+
+    XCTAssertEqual("CZK100.00250", attributedCurrency?.string)
+    XCTAssertEqual("CZK", attributedCurrencySubstring?.string)
+    XCTAssertEqual(".00250", attributedFractionSubstring?.string)
+    XCTAssertEqual(superscriptFont, currencyAttributes?[NSAttributedString.Key.font] as? UIFont)
+    XCTAssertEqual(foregroundColor, currencyAttributes?[NSAttributedString.Key.foregroundColor] as? UIColor)
+    XCTAssertEqual(offset, currencyAttributes?[NSAttributedString.Key.baselineOffset] as? CGFloat)
+    XCTAssertEqual(font, amountAttributes?[NSAttributedString.Key.font] as? UIFont)
+    XCTAssertEqual(foregroundColor, amountAttributes?[NSAttributedString.Key.foregroundColor] as? UIColor)
+    XCTAssertEqual(superscriptFont, fractionAttributes?[NSAttributedString.Key.font] as? UIFont)
+    XCTAssertEqual(foregroundColor, fractionAttributes?[NSAttributedString.Key.foregroundColor] as? UIColor)
+    XCTAssertEqual(offset, fractionAttributes?[NSAttributedString.Key.baselineOffset] as? CGFloat)
+  }
+  // swiftlint:enable line_length
+
   func testDate() {
     let date = 434592000.0 // Oct 10 1983 in UTC
     // swiftlint:disable force_unwrapping

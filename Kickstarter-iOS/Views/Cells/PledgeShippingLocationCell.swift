@@ -81,7 +81,7 @@ final class PledgeShippingLocationCell: UITableViewCell, ValueCell {
   func configureWith(value: (location: String, currency: String, rate: Double)) {
     self.countryButton.setTitle(value.location, for: .normal)
 
-    self.amountLabel.attributedText = attributedCurrencyString(
+    self.amountLabel.attributedText = Format.attributedCurrency(
       currencySymbol: value.currency,
       amount: value.rate,
       fractionDigits: 2,
